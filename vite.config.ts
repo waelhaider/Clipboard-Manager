@@ -50,6 +50,7 @@ export default defineConfig(({ mode }) => {
   
   return {
     plugins: [react()],
+    base: '/Clipboard-Manager/',
     define: {
       // Polyfill process.env.API_KEY for the app
       'process.env.API_KEY': JSON.stringify(apiKey)
