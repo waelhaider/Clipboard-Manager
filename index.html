@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مدير الحافظة</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <div class="toast-icon">✓</div>
+        <span id="toast-message"></span>
+    </div>
+
+    <!-- Sidebar Overlay -->
+    <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+    <!-- Sidebar -->
+    <div id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <h2>القائمة الرئيسية</h2>
+            <button id="close-sidebar" class="close-btn">×</button>
+        </div>
+        <div class="sidebar-content">
+            <button id="add-board-btn" class="sidebar-btn">
+                <span>+</span>
+                <span>إضافة لوحة</span>
+            </button>
+            <button id="reorder-boards-btn" class="sidebar-btn">
+                <span>↻</span>
+                <span>ترتيب اللوحات</span>
+            </button>
+            <div class="sidebar-divider"></div>
+            <h3 id="boards-toggle" class="boards-toggle">
+                إدارة اللوحات
+                <span id="boards-chevron">▼</span>
+            </h3>
+            <div id="boards-list" class="boards-list">
+                <!-- Boards will be populated here -->
+            </div>
+            <div class="sidebar-divider"></div>
+            <button id="export-btn" class="sidebar-btn">
+                <span>↑</span>
+                <span>تصدير نسخة كاملة</span>
+            </button>
+            <button id="export-board-btn" class="sidebar-btn">
+                <span>↑</span>
+                <span>تصدير لوحة</span>
+            </button>
+            <button id="import-btn" class="sidebar-btn">
+                <span>↓</span>
+                <span>استيراد نسخة كاملة</span>
+            </button>
+            <button id="import-board-btn" class="sidebar-btn">
+                <span>↓</span>
+                <span>استيراد لوحة</span>
+            </button>
+            <input type="file" id="import-file" hidden accept=".json">
+            <input type="file" id="import-board-file" hidden accept=".json">
+            <button id="trash-btn" class="sidebar-btn trash-btn">
+                <span>🗑</span>
+                <span>المحذوفات</span>
+            </button>
+
+            <button id="font-size-btn" class="sidebar-btn">
+                <span>🔤</span>
+                <span>حجم النصوص</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <button id="open-sidebar" class="menu-btn">☰</button>
+        <div id="boards-nav" class="boards-nav">
+            <!-- Boards buttons will be populated here -->
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <!-- Input Area -->
+        <form id="note-form" class="input-form">
+            <textarea id="note-input" placeholder="اكتب ملاحظة..." rows="1"></textarea>
+            <button type="submit" class="submit-btn">➤</button>
+        </form>
+
+        <!-- Search and Filter -->
+        <div class="search-bar">
+            <div class="search-input">
+                <span>🔍</span>
+                <input id="search-input" type="text" placeholder="بحث في الملاحظات...">
+            </div>
+            <button class="filter-btn">⚙</button>
+        </div>
+
+        <!-- Notes List -->
+        <div id="notes-list" class="notes-list">
+            <!-- Notes will be populated here -->
+        </div>
+    </main>
+
+    <!-- Modals -->
+    <!-- Add/Edit Board Modal -->
+    <div id="board-modal" class="modal">
+        <div class="modal-content board-modal-content">
+            <h3 id="board-modal-title">إضافة لوحة جديدة</h3>
+            <form id="board-form">
+                <input id="board-input" type="text" placeholder="اسم اللوحة...">
+                <div class="modal-actions">
+                    <button type="submit" class="primary-btn">حفظ</button>
+                    <button type="button" id="cancel-board" class="secondary-btn">إلغاء</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Board Modal -->
+    <div id="delete-board-modal" class="modal">
+        <div class="modal-content">
+            <h3>حذف اللوحة؟</h3>
+            <p>سيتم نقل جميع الملاحظات إلى سلة المحذوفات. هل أنت متأكد؟</p>
+            <div class="modal-actions">
+                <button id="confirm-delete-board" class="danger-btn">حذف</button>
+                <button id="cancel-delete-board" class="secondary-btn">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reorder Boards Modal -->
+    <div id="reorder-modal" class="modal">
+        <div class="modal-content reorder-content">
+            <h3>ترتيب اللوحات</h3>
+            <div id="reorder-list" class="reorder-list">
+                <!-- Boards for reordering -->
+            </div>
+            <button id="close-reorder" class="primary-btn">حفظ وإغلاق</button>
+        </div>
+    </div>
+
+    <!-- Trash Modal -->
+    <div id="trash-modal" class="modal">
+        <div class="modal-content trash-content">
+            <div class="modal-header">
+                <h4>🗑️ المحذوفات</h4>
+                <button id="close-trash" class="close-btn">×</button>
+            </div>
+            <div id="trash-list" class="trash-list">
+                <!-- Trash items -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Move To Modal -->
+    <div id="move-modal" class="modal">
+        <div class="modal-content">
+            <h3>نقل إلى...</h3>
+            <div id="move-options" class="move-options">
+                <!-- Board options -->
+            </div>
+            <button id="cancel-move" class="secondary-btn">إلغاء</button>
+        </div>
+    </div>
+
+    <!-- Edit Note Modal -->
+    <div id="edit-note-modal" class="modal">
+        <div class="modal-content edit-content">
+            <div class="modal-header">
+                <h3>✏ تحرير الملاحظة</h3>
+                <button id="close-edit" class="close-btn">×</button>
+            </div>
+            <textarea id="edit-note-textarea" placeholder="اكتب هنا..."></textarea>
+            <div class="modal-actions">
+                <button id="save-edit" class="primary-btn">حفظ التعديلات</button>
+                <button id="cancel-edit" class="secondary-btn">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Font Size Modal -->
+    <div id="font-size-modal" class="modal">
+        <div class="modal-content">
+            <h3>🔤 حجم النصوص</h3>
+            <div class="font-size-controls">
+                <button id="decrease-font" class="font-btn">-</button>
+                <span id="current-font-size">14px</span>
+                <button id="increase-font" class="font-btn">+</button>
+            </div>
+            <div class="modal-actions">
+                <button id="close-font-size" class="secondary-btn">إغلاق</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Translation Modal -->
+    <div id="translate-modal" class="modal">
+        <div class="modal-content translate-content">
+            <div class="modal-header">
+                <h3>🌐 الترجمة الفورية</h3>
+                <button id="close-translate" class="close-btn">×</button>
+            </div>
+            <div class="translate-controls">
+                <div class="lang-select">
+                    <select id="source-lang" disabled>
+                        <option value="Arabic">العربية</option>
+                        <option value="English">الإنجليزية</option>
+                        <option value="French">الفرنسية</option>
+                        <option value="Spanish">الإسبانية</option>
+                        <option value="German">الألمانية</option>
+                    </select>
+                </div>
+                <button id="swap-langs" class="swap-btn">↔</button>
+                <div class="lang-select">
+                    <select id="target-lang">
+                        <option value="English">الإنجليزية</option>
+                        <option value="Arabic">العربية</option>
+                        <option value="French">الفرنسية</option>
+                        <option value="Spanish">الإسبانية</option>
+                        <option value="German">الألمانية</option>
+                    </select>
+                </div>
+            </div>
+            <div class="translate-panels">
+                <div class="translate-panel">
+                    <textarea id="original-text" placeholder="اكتب النص هنا..." dir="rtl"></textarea>
+                </div>
+                <div class="translate-panel">
+                    <textarea id="translated-text" readonly placeholder="الترجمة ستظهر هنا..." dir="ltr"></textarea>
+                </div>
+            </div>
+            <div class="panel-footer">
+                <button id="copy-original" class="copy-btn">نسخ الأصلي</button>
+                <button id="save-edit-translate" class="copy-btn">حفظ التعديل</button>
+                <button id="copy-translated" class="copy-btn">نسخ الترجمة</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Back to Top Button -->
+    <button id="back-to-top" class="back-to-top-btn">🔝</button>
+
+    <script src="script.js"></script>
+</body>
+</html>
