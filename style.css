@@ -604,7 +604,7 @@ ease;
 
 .modal-content {
     background-color: #dfe1e3;
-    width: 90%;
+    width: 97%;
     position: fixed;
     top: 15px;
     max-width: 24rem;
@@ -1092,4 +1092,5 @@ ease;
         margin: 0;
         /*border-radius: 10px;*/
     }
+
 }
